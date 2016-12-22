@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>boards.db</file>
+        <file>undo.png</file>
+        <file>back.png</file>
+        <file>cancel.png</file>
+        <file>check.png</file>
+        <file>cancel_white.png</file>
+        <file>check_white.png</file>
+        <file>game_background.png</file>
+        <file>erase.png</file>
+        <file>settings.png</file>
+        <file>stopwatch.png</file>
+        <file>info.png</file>
+        <file>reset.png</file>
+    </qresource>
+</RCC>
