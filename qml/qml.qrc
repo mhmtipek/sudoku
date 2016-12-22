@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>SudokuGamePage.qml</file>
+        <file>MainPage.qml</file>
+        <file>SudokuBoard.qml</file>
+        <file>SudokuKeyboard.qml</file>
+        <file>GameTypePage.qml</file>
+        <file>InitializingPage.qml</file>
+        <file>StandardGameConfigurationPage.qml</file>
+        <file>Dialog.qml</file>
+        <file>CircularButton.qml</file>
+        <file>Extra/qmldir</file>
+        <file>Extra/Globals.qml</file>
+        <file>ScoreBoardPage.qml</file>
+        <file>SliderView.qml</file>
+        <file>AboutPage.qml</file>
+        <file>RectangularButton.qml</file>
+    </qresource>
+</RCC>
