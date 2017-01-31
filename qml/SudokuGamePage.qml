@@ -13,7 +13,7 @@ Rectangle {
 
     property real shadowWidth: width * 0.018
 
-    property bool gameFinished: false
+    property string finishTime: "-"
 
     Image {
         id: backgroundImage
@@ -35,9 +35,9 @@ Rectangle {
 
     Component.onCompleted: {
         GameControl.gameFinished.connect(function() {
-            gameFinished = true;
             keyboard.hide();
             gameFinishedDialog.show();
+            finishTime = fixTime(GameControl.finishTime());
         });
     }
 
@@ -271,7 +271,7 @@ Rectangle {
 
                     verticalAlignment: Text.AlignVCenter
                     font.pointSize: 22
-                    text: gameFinished ? fixTime(GameControl.finishTime()) : ""
+                    text: root.finishTime
                     color: Globals.style.colorPalette.textColor
                 }
             }
