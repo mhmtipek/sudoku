@@ -272,6 +272,7 @@ void StandardSudokuSearchTree::search_MultiThread()
                 node.node = *it;
                 node.board = testBoard;
                 node.found = &found;
+                node.cancelWhenFound = !d->m_findAllSolutions;
                 nodesList.push(node);
             }
 
