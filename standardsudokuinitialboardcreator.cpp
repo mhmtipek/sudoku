@@ -156,8 +156,6 @@ void StandardSudokuInitialBoardCreator::createFinishedBoard()
 /*!
  * \brief This functions removes cells until board rate reaches desired
  *        difficulty and has single solution.
- *
- * If board has more than one solution after removing one cell, move is reverted.
  */
 void StandardSudokuInitialBoardCreator::removeCells()
 {
