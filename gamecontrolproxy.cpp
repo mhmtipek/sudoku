@@ -208,7 +208,7 @@ void GameControlProxy::clearScoreBoardData(QString gameType)
         qDebug() << "Cleared scoreboard table data";
     }
 
-    m_scoreBoardModel->select();
+    m_scoreBoardModel->refresh();
 }
 
 void GameControlProxy::resumeGameTime()
