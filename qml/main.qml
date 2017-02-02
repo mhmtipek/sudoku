@@ -34,6 +34,7 @@ ApplicationWindow {
             }
 
             onScoreboardPageRequested: {
+                GameControl.scoreBoardModel.refresh();
                 stackView.push(scoreBoardPage);
                 changeActiveFocusTimer.start();
             }
