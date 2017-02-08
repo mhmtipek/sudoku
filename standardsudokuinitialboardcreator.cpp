@@ -11,7 +11,7 @@
 
 #include <QDebug>
 
-static const QVector<int> difficultyRates({200, 360, 500});
+static const QVector<int> difficultyRates({200, 360, 500, 640});
 
 //! Returns difficulty of given rate
 static int difficultyByBoardRate(float rate)
@@ -25,7 +25,18 @@ static int difficultyByBoardRate(float rate)
     if (rate < difficultyRates[2])
         return 2;
 
-    return 3;
+    if (rate < difficultyRates[3])
+        return 3;
+
+    return 4;
+}
+
+inline int waitTimeForDifficulty(int difficulty)
+{
+    if (difficulty == 4)
+        return 8000;
+
+    return 4000;
 }
 
 StandardSudokuInitialBoardCreator::StandardSudokuInitialBoardCreator(QObject *parent) :
@@ -181,7 +192,7 @@ void StandardSudokuInitialBoardCreator::removeCells()
         if (StandardSudokuSolver::solutionCount(testBoard) > 1) {
             qDebug() << "Reverted:" << rate;
 
-            if (elapsedTime.elapsed() >= 4000) {
+            if (elapsedTime.elapsed() >= waitTimeForDifficulty(m_difficulty)) {
                 qDebug() << "All I can do is" << rate;
                 break;
             }

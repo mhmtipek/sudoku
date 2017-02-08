@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import "Extra"
 
 Rectangle {
     id: root
@@ -41,6 +42,10 @@ Rectangle {
         Repeater {
             model: ListModel {
                 ListElement {
+                    name: qsTr("Hardest*")
+                    difficulty: 4
+                }
+                ListElement {
                     name: qsTr("Hard")
                     difficulty: 3
                 }
@@ -66,6 +71,17 @@ Rectangle {
                 }
             }
         }
+    }
+
+    Text {
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: parent.width * 0.1
+
+        font.pointSize: 16
+        font.weight: Font.DemiBold
+        color: Globals.style.colorPalette.textColor
+        text: qsTr("* Creating difficulty may take time longer")
     }
 
     Keys.onBackPressed: {

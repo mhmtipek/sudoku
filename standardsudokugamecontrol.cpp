@@ -65,7 +65,7 @@ int StandardSudokuGameControl::difficulty() const
 
 void StandardSudokuGameControl::setDifficulty(int value)
 {
-    if (value < 1 || value > 3)
+    if (value < 1 || value > 4)
         return;
 
     m_difficulty = value;
