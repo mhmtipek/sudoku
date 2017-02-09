@@ -23,5 +23,5 @@ Compiling
 
 TODO
 ----
-- Change QSharedPointer to QScopedPointer in search tree
+- Change QSharedPointer to std::unique_ptr in search tree
 - Manually delete tree nodes to prevent stack overflow at tree destruction
