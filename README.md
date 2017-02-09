@@ -21,7 +21,3 @@ Compiling
 - C++11 supported compiler is needed
 - Open with QtCreator, press run
 
-TODO
-----
-- Change QSharedPointer to std::unique_ptr in search tree
-- Manually delete tree nodes to prevent stack overflow at tree destruction
