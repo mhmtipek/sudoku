@@ -26,6 +26,9 @@ Rectangle {
         if (difficulty === 3)
             return qsTr("Hard");
 
+        if (difficulty === 4)
+            return qsTr("Hardest");
+
         return "";
     }
 
@@ -120,7 +123,7 @@ Rectangle {
             anchors.top: parent.top
 
             Repeater {
-                model: 3
+                model: 4
 
                 delegate: Item {
                     width: root.width / 4
