@@ -81,7 +81,7 @@ Rectangle {
         font.pointSize: 16
         font.weight: Font.DemiBold
         color: Globals.style.colorPalette.textColor
-        text: qsTr("* Creating difficulty may take time longer")
+        text: qsTr("* May take long time (~20 seconds)")
     }
 
     Keys.onBackPressed: {
