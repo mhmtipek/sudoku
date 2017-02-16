@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.3
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.2
 import "Extra" 1.0
