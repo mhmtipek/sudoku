@@ -87,6 +87,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.width * 0.1
+        anchors.leftMargin: (parent.width / 40)
+        anchors.rightMargin: (parent.width / 40)
 
         Rectangle {
             id: bodyItemBackground
