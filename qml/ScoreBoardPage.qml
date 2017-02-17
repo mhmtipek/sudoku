@@ -214,15 +214,15 @@ Rectangle {
 
         buttons: [
             {
-                imageUrl: "qrc:/check_white.png",
+                imageUrl: "qrc:/cancel_white.png",
                 onClicked: function() {
-                    GameControl.clearScoreBoardData("standard");
                     clearDataConfirmationDialog.hide();
                 }
             },
             {
-                imageUrl: "qrc:/cancel_white.png",
+                imageUrl: "qrc:/check_white.png",
                 onClicked: function() {
+                    GameControl.clearScoreBoardData("standard");
                     clearDataConfirmationDialog.hide();
                 }
             }
