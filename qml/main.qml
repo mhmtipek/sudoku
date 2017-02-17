@@ -78,25 +78,15 @@ ApplicationWindow {
             visible: false
 
             onFinished: {
-                stackView.push({item: initializingPage, replace: true});
-                changeActiveFocusTimer.start()
+                stackView.push({item: sudokuGamePage, replace: true});
                 GameControl.createInitialTable();
+                sudokuGamePage.clear();
+                sudokuGamePage.initializingPage.visible = true;
+                changeActiveFocusTimer.start()
             }
 
             onBackRequested: {
                 stackView.pop();
-                changeActiveFocusTimer.start();
-            }
-        }
-
-        InitializingPage {
-            id: initializingPage
-            visible: false
-
-            onFinished: {
-                GameControl.start();
-                sudokuGamePage.clear();
-                stackView.push({item:sudokuGamePage, replace: true});
                 changeActiveFocusTimer.start();
             }
         }
