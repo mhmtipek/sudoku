@@ -12,8 +12,8 @@ Rectangle {
     signal backRequested
 
     property real shadowWidth: width * 0.018
-
     property string finishTime: "-"
+    property alias initializingPage: initializingPage
 
     Image {
         id: backgroundImage
@@ -316,4 +316,10 @@ Rectangle {
         else
             confirmExitDialog.show();
     }
+
+    InitializingPage {
+        id: initializingPage
+        visible: false
+    }
+
 }
