@@ -10,9 +10,13 @@ Rectangle {
     signal backRequested
 
     color: "#81d2c9"
-    property real shadowWidth: width * 0.018
 
     Keys.onBackPressed: {
+        if (clearDataConfirmationDialog.visible) {
+            clearDataConfirmationDialog.hide();
+            return;
+        }
+
         root.backRequested();
     }
 
@@ -94,8 +98,8 @@ Rectangle {
             id: bodyItemBackground
 
             anchors.fill: parent
-            anchors.topMargin: root.shadowWidth
-            anchors.bottomMargin: root.shadowWidth
+            anchors.topMargin: Globals.style.shadowWidth
+            anchors.bottomMargin: Globals.style.shadowWidth
 
             color: Globals.style.colorPalette.backgroundColor
         }
@@ -109,14 +113,14 @@ Rectangle {
         color: Globals.style.colorPalette.shadowColor
         source: bodyItem
         spread: 0.2
-        radius: root.shadowWidth
+        radius: Globals.style.shadowWidth
         samples: 32
     }
 
     Item {
         anchors.fill: bodyItem
-        anchors.topMargin: root.shadowWidth * 2
-        anchors.bottomMargin: root.shadowWidth * 2
+        anchors.topMargin: Globals.style.shadowWidth * 2
+        anchors.bottomMargin: Globals.style.shadowWidth * 2
 
         Row {
             id: difficultyTabsRow
@@ -167,7 +171,6 @@ Rectangle {
             anchors.top: difficultyTabsRow.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-//                anchors.bottomMargin: root.shadowWidth
             width: root.width * 0.95
 
             visible: GameControl.scoreBoardModel.count > 0

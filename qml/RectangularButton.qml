@@ -8,7 +8,6 @@ Item {
     width: root.width * 0.7
     height: root.height * 0.1
 
-    property int shadowWidth: width * 0.02
     property string text
 
     signal clicked()
@@ -17,15 +16,12 @@ Item {
         id: buttonBackground
 
         anchors.fill: parent
-        anchors.margins: parent.shadowWidth
+        anchors.margins: Globals.style.shadowWidth
 
         color: buttonMouseArea.pressed ? Globals.style.colorPalette.buttonColorPressed
                                        : Globals.style.colorPalette.buttonColor
 
         radius: height * 0.2
-
-        border.width: height * 0.05
-        border.color: Globals.style.colorPalette.buttonBorderColor
     }
 
     DropShadow {
@@ -34,7 +30,7 @@ Item {
         fast: false
         cached: false
         color: Globals.style.colorPalette.shadowColor
-        radius: buttonMouseArea.pressed ? parent.shadowWidth * 0.7 : parent.shadowWidth
+        radius: buttonMouseArea.pressed ? Globals.style.shadowWidth * 0.7 : Globals.style.shadowWidth
         source: buttonBackground
         spread: 0.2
         samples: 32

@@ -11,9 +11,7 @@ Rectangle {
 
     signal backRequested
 
-    property real shadowWidth: width * 0.018
     property string finishTime: "-"
-    property alias initializingPage: initializingPage
 
     Image {
         id: backgroundImage
@@ -38,6 +36,16 @@ Rectangle {
             keyboard.hide();
             gameFinishedDialog.show();
             finishTime = fixTime(GameControl.finishTime());
+        });
+
+        GameControl.onInitialTableCreationProgressChanged.connect(function () {
+            if (GameControl.initialTableCreationProgress === 100) {
+                if (waitDialog.visible)
+                    waitDialog.hide();
+            } else {
+                if (!waitDialog.visible)
+                    waitDialog.show();
+            }
         });
     }
 
@@ -96,7 +104,7 @@ Rectangle {
                 id: undoButton
 
                 anchors.fill: parent
-                anchors.margins: root.shadowWidth * 2
+                anchors.margins: Globals.style.shadowWidth * 2
 
                 color: undoButton_MouseArea.pressed ? Globals.style.colorPalette.buttonColorPressed
                                                     : Globals.style.colorPalette.buttonColor
@@ -130,7 +138,7 @@ Rectangle {
             fast: true
             cached: true
             color: Globals.style.colorPalette.shadowColor
-            radius: undoButton_MouseArea.pressed ? root.shadowWidth * 0.7 : root.shadowWidth
+            radius: undoButton_MouseArea.pressed ? Globals.style.shadowWidth * 0.7 : Globals.style.shadowWidth
             source: undoButtonContainer
             spread: 0.2
             samples: 32
@@ -143,7 +151,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        height: width + 2 * root.shadowWidth
+        height: width + 2 * Globals.style.shadowWidth
 
         SudokuBoard {
             id: board
@@ -171,7 +179,7 @@ Rectangle {
         color: Globals.style.colorPalette.shadowColor
         source: boardContainer
         spread: 0.2
-        radius: root.shadowWidth
+        radius: Globals.style.shadowWidth
         samples: 32
     }
 
@@ -188,7 +196,7 @@ Rectangle {
             id: keyboard
 
             anchors.top: parent.top
-            anchors.topMargin: root.shadowWidth
+            anchors.topMargin: Globals.style.shadowWidth
             anchors.horizontalCenter: parent.horizontalCenter
 
             height: root.height * 0.09
@@ -218,7 +226,7 @@ Rectangle {
         color: Globals.style.colorPalette.shadowColor
         source: keyboardContainer
         spread: 0.2
-        radius: root.shadowWidth
+        radius: Globals.style.shadowWidth
         samples: 32
     }
 
@@ -301,6 +309,12 @@ Rectangle {
     }
 
     Keys.onBackPressed: {
+        if (keyboard.visible) {
+            board.clearSelection();
+            keyboard.hide();
+            return;
+        }
+
         if (gameFinishedDialog.visible) {
             gameFinishedDialog.hide();
             return;
@@ -317,9 +331,10 @@ Rectangle {
             confirmExitDialog.show();
     }
 
-    InitializingPage {
-        id: initializingPage
-        visible: false
-    }
+    WaitDialog {
+        id: waitDialog
 
+        visible: false
+        text: GameControl.initialTableCreationProgressText + "..."
+    }
 }

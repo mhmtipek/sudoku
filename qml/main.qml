@@ -81,7 +81,7 @@ ApplicationWindow {
                 stackView.push({item: sudokuGamePage, replace: true});
                 GameControl.createInitialTable();
                 sudokuGamePage.clear();
-                sudokuGamePage.initializingPage.visible = true;
+                GameControl.start();
                 changeActiveFocusTimer.start()
             }
 

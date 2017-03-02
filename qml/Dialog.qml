@@ -14,8 +14,6 @@ Item {
     property alias title: titleText.text
     property alias text: bodyLoader.bodyText
 
-    property real shadowWidth: parent.width * 0.018
-
     property alias body: bodyLoader.sourceComponent
 
     visible: false
@@ -25,42 +23,60 @@ Item {
     property var buttons: []
 
     function show() {
-        root.visible = true;
+        showAnimation.start();
     }
 
     function hide() {
-        root.visible = false;
+        hideAnimation.start();
     }
 
-    Rectangle {
+    NumberAnimation {
+        id: showAnimation
+
+        target: root
+        property: "opacity"
+        duration: 90
+        from: 0
+        to: 1
+
+        onStarted: root.visible = true
+    }
+
+    NumberAnimation {
+        id: hideAnimation
+
+        target: root
+        property: "opacity"
+        duration: 150
+        from: 1
+        to: 0
+
+        onStopped: root.visible = false
+    }
+
+    MouseArea {
+        anchors.fill: blurEffect
+        onClicked: root.hide()
+    }
+
+    FastBlur {
+        id: blurEffect
+
         x: -parent.x
         y: -parent.y
-        width: parent.parent.width
-        height: parent.parent.height
-
-        color: Globals.style.colorPalette.shadowColor
-        opacity: 0.4
-
-        MouseArea {
-            anchors.fill: parent
-            propagateComposedEvents: false
-            onPressed: mouse.accepted = true
-            onReleased: mouse.accepted = true
-            onDoubleClicked: mouse.accepted = true
-            onPositionChanged: mouse.accepted = true
-            onPressAndHold: mouse.accepted = true
-            onClicked: {
-                root.visible = false;
-                mouse.accepted = true;
-            }
-        }
+        width: root.parent.width
+        height: root.parent.height
+        source: parent.parent
+        radius: root.parent.width * 0.1
+        cached: true
+        smooth: false
     }
 
     Rectangle {
         id: background
 
         anchors.fill: parent
-        anchors.margins: shadowWidth
+        anchors.margins: Globals.style.shadowWidth
 
         color: Globals.style.colorPalette.backgroundColor
 
@@ -83,7 +99,7 @@ Item {
         fast: false
         cached: false
         color: Globals.style.colorPalette.shadowColor
-        radius: root.shadowWidth
+        radius: Globals.style.shadowWidth
         source: background
         spread: 0.2
         samples: 32
@@ -182,8 +198,8 @@ Item {
                 Repeater {
                     model: root.buttons
                     delegate: CircularButton {
-                        width: root.parent.height * 0.1
-                        height: root.parent.height * 0.1
+                        width: root.parent.height * 0.105
+                        height: root.parent.height * 0.105
 
                         imageUrl: root.buttons[index].imageUrl
                         color: Globals.style.colorPalette.darkButtonColor

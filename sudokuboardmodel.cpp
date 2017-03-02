@@ -120,6 +120,8 @@ void SudokuBoardModel::clear()
         for (int col = 0; col < 9; ++col)
             m_dataGrid[row][col].setValue(EMPTY_CELL_VALUE);
     }
+
+    emit dataChanged(createIndex(0, 0), createIndex(8, 8), QVector<int>() << ValueRole);
 }
 
 void SudokuBoardModel::makeEmptyCellsEditable()

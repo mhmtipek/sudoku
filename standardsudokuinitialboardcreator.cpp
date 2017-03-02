@@ -13,6 +13,8 @@
 
 static const QVector<int> difficultyRates({200, 360, 500, 640});
 
+static const int waitTimeForFinishedBoardCreation = 4000;
+
 //! Returns difficulty of given rate
 static int difficultyByBoardRate(float rate)
 {
@@ -92,6 +94,7 @@ void StandardSudokuInitialBoardCreator::run()
 {
     QMutexLocker locker(&m_boardMutex);
 
+    setProgress(0);
     setProgressText(tr("Creating board"));
     createFinishedBoard();
 
@@ -141,7 +144,9 @@ void StandardSudokuInitialBoardCreator::createFinishedBoard()
         if (StandardSudokuSolver::solve(m_board))
             break;
 
-    } while(elapsedTime.elapsed() < 4000);
+        setProgress(elapsedTime.elapsed() * 50 / waitTimeForFinishedBoardCreation);
+
+    } while(elapsedTime.elapsed() < waitTimeForFinishedBoardCreation);
 
     if (!StandardSudokuSolver::isBoardFinished(m_board)) {
         qDebug() << "could not find a solution in 4 seconds. getting from db";
@@ -162,6 +167,8 @@ void StandardSudokuInitialBoardCreator::createFinishedBoard()
     } else {
         qDebug() << "found solution in" << elapsedTime.elapsed() << "ms";
     }
+
+    setProgress(50);
 }
 
 /*!
@@ -182,6 +189,8 @@ void StandardSudokuInitialBoardCreator::removeCells()
 
     // Remove cell until board rate reaches desired difficulty
     while (difficultyByBoardRate(rate) < m_difficulty) {
+        setProgress(qMin(100, static_cast<int>(50 + rate * 50 / difficultyRates[m_difficulty - 1])));
+
         const int index = rand() % nonEmptyIndexes.size();
 
         // Remove random cell
@@ -211,6 +220,8 @@ void StandardSudokuInitialBoardCreator::removeCells()
     qDebug() << "Non-empty index count:" << nonEmptyIndexes.size();
     testBoard = m_board;
     qDebug() << "Solution count:" << StandardSudokuSolver::solutionCount(testBoard);
+
+    setProgress(100);
 }
 
 void StandardSudokuInitialBoardCreator::setProgressText(const QString &&text)
@@ -220,6 +231,14 @@ void StandardSudokuInitialBoardCreator::setProgressText(const QString &&text)
     m_progressTextMutex.unlock();
 
     emit progressTextChanged();
+}
+
+void StandardSudokuInitialBoardCreator::setProgress(int value)
+{
+    m_progress = value;
+
+    qDebug() << "progress: " << value;
+    emit progressChanged();
 }
 
 /*!

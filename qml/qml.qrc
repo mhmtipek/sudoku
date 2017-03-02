@@ -6,7 +6,7 @@
         <file>SudokuBoard.qml</file>
         <file>SudokuKeyboard.qml</file>
         <file>GameTypePage.qml</file>
-        <file>InitializingPage.qml</file>
+        <file>WaitDialog.qml</file>
         <file>StandardGameConfigurationPage.qml</file>
         <file>Dialog.qml</file>
         <file>CircularButton.qml</file>

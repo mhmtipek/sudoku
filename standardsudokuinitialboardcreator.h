@@ -59,7 +59,9 @@ private:
 
     //! Removes cells until board difficulty is
     void removeCells();
+
     void setProgressText(const QString &&text);
+    void setProgress(int value);
 
     QMutex m_boardMutex;
     std::array<std::array<int, 9>, 9> m_board;

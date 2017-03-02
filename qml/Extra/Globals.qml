@@ -1,6 +1,7 @@
 pragma Singleton
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 
 QtObject {
     property QtObject style: QtObject {
@@ -13,7 +14,7 @@ QtObject {
             property color backgroundTextColor: "#90a9a5"
             property color borderColor: "#00796B"
             property color lineColor: "#176258"
-            property color shadowColor: "#000000"
+            property color shadowColor: "#353535"
             property color buttonColor: "#f3e1c9"
             property color buttonColorPressed: "#f3d5b0"
             property color buttonBorderColor: "#176258"
@@ -33,5 +34,7 @@ QtObject {
             property color uneditableCellTextColor: "#0d3832"
             property color sudokuGamePageBackground: "#E5A166"
         }
+
+        property real shadowWidth: Screen.width * 0.015
     }
 }

@@ -8,8 +8,6 @@ Item {
     width: root.width * 0.2
     height: width
 
-    property int shadowWidth: width * 0.08
-
     property string imageUrl
 
     property color color: Globals.style.colorPalette.buttonColor
@@ -22,12 +20,10 @@ Item {
         id: background
 
         anchors.fill: parent
-        anchors.margins: root.shadowWidth * 2
+        anchors.margins: Globals.style.shadowWidth * 2
 
         color: mouseArea.pressed ? root.colorWhenPressed : root.color
         radius: width / 2
-        border.width: width * 0.05
-        border.color: root.borderColor
 
         Image {
             anchors.fill: parent
@@ -53,7 +49,7 @@ Item {
         fast: false
         cached: false
         color: Globals.style.colorPalette.shadowColor
-        radius: mouseArea.pressed ? root.shadowWidth * 0.7 : root.shadowWidth
+        radius: mouseArea.pressed ? Globals.style.shadowWidth * 0.7 : Globals.style.shadowWidth
         source: background
         spread: 0.2
         samples: 32
