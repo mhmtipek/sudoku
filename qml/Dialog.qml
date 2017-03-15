@@ -15,6 +15,9 @@ Item {
     property alias text: bodyLoader.bodyText
 
     property alias body: bodyLoader.sourceComponent
+    property alias bodyItem: bodyLoader.item
+
+    property alias titleVisible: header.visible
 
     visible: false
 
@@ -198,8 +201,8 @@ Item {
                 Repeater {
                     model: root.buttons
                     delegate: CircularButton {
-                        width: root.parent.height * 0.105
-                        height: root.parent.height * 0.105
+                        width: root.parent.height * 0.09
+                        height: root.parent.height * 0.09
 
                         imageUrl: root.buttons[index].imageUrl
                         color: Globals.style.colorPalette.darkButtonColor
