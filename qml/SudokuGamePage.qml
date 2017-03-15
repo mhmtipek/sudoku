@@ -28,7 +28,13 @@ Rectangle {
     function clear() {
         confirmExitDialog.visible = false;
         gameFinishedDialog.visible = false;
+        gameSummaryContainer.visible = false;
         keyboard.hide();
+    }
+
+    function showGameSummaryContainer() {
+        gameSummaryContainer_showAnimation.start();
+        gameFinishedDialog.onVisibleChanged.disconnect(showGameSummaryContainer);
     }
 
     Component.onCompleted: {
@@ -36,6 +42,7 @@ Rectangle {
             keyboard.hide();
             gameFinishedDialog.show();
             finishTime = fixTime(GameControl.finishTime());
+            gameFinishedDialog.onVisibleChanged.connect(showGameSummaryContainer);
         });
 
         GameControl.onInitialTableCreationProgressChanged.connect(function () {
@@ -73,11 +80,13 @@ Rectangle {
         height: parent.height * 0.15
 
         CircularButton {
+            id: backButton
+
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin:  (parent.height - height) / 3
+            anchors.leftMargin: (parent.height - height) / 2
 
-            width: root.width * 0.2
+            width: root.width * 0.18
             height: width
 
             imageUrl: "qrc:/back.png"
@@ -90,58 +99,35 @@ Rectangle {
             }
         }
 
-        Item {
-            id: undoButtonContainer
-
+        Row {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            anchors.rightMargin: (parent.height - height) / 3
+            anchors.rightMargin: (parent.height - backButton.height) / 2
 
-            width: root.width * 0.2
-            height: width
+            spacing: anchors.rightMargin - Globals.style.shadowWidth
 
-            Rectangle {
-                id: undoButton
+            CircularButton {
+                width: root.width * 0.18
+                height: width
 
-                anchors.fill: parent
-                anchors.margins: Globals.style.shadowWidth * 2
-
-                color: undoButton_MouseArea.pressed ? Globals.style.colorPalette.buttonColorPressed
-                                                    : Globals.style.colorPalette.buttonColor
-                radius: width / 2
-                border.width: width * 0.05
-                border.color: Globals.style.colorPalette.buttonBorderColor
+                imageUrl: "qrc:/undo.png"
                 visible: GameControl.model.canUndo
 
-                Image {
-                    anchors.fill: parent
-                    anchors.margins: parent.width * 0.1
-
-                    source: "qrc:/undo.png"
-                    fillMode: Image.PreserveAspectFit
-                    mipmap: true
-                }
-
-                MouseArea {
-                    id: undoButton_MouseArea
-                    anchors.fill: parent
-                    onClicked: {
-                        GameControl.model.undo();
-                    }
+                onClicked: {
+                    GameControl.model.undo();
                 }
             }
-        }
 
-        DropShadow {
-            anchors.fill: undoButtonContainer
+            CircularButton {
+                width: root.width * 0.18
+                height: width
 
-            fast: true
-            cached: true
-            color: Globals.style.colorPalette.shadowColor
-            radius: undoButton_MouseArea.pressed ? Globals.style.shadowWidth * 0.7 : Globals.style.shadowWidth
-            source: undoButtonContainer
-            spread: 0.2
-            samples: 32
+                imageUrl: "qrc:/save.png"
+
+                onClicked: {
+                    boardSlotsDialog.show();
+                }
+            }
         }
     }
 
@@ -181,6 +167,75 @@ Rectangle {
         spread: 0.2
         radius: Globals.style.shadowWidth
         samples: 32
+    }
+
+    Column {
+        id: gameSummaryContainer
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: boardContainer.bottom
+        anchors.topMargin: root.height * 0.04
+
+        spacing: root.height * 0.015
+        visible: false
+
+        NumberAnimation {
+            id: gameSummaryContainer_showAnimation
+
+            target: gameSummaryContainer
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 400
+            onStarted: {
+                gameSummaryContainer.opacity = 0;
+                gameSummaryContainer.visible = true;
+            }
+        }
+
+        Row {
+            spacing: root.width * 0.02
+
+            Image {
+                width: root.width * 0.1
+                height: width
+
+                source: "qrc:/stopwatch.png"
+                fillMode: Image.PreserveAspectFit
+            }
+
+            Text {
+                height: root.width * 0.1
+                verticalAlignment: Text.AlignVCenter
+
+                text: root.finishTime
+                font.pointSize: 24
+                font.weight: Font.Bold
+                color: Globals.style.colorPalette.textColor
+            }
+        }
+
+        Row {
+            spacing: root.width * 0.02
+
+            Image {
+                width: root.width * 0.1
+                height: width
+
+                source: "qrc:/star.png"
+                fillMode: Image.PreserveAspectFit
+            }
+
+            Text {
+                height: root.width * 0.1
+                verticalAlignment: Text.AlignVCenter
+
+                text: "#" + GameControl.rank
+                font.pointSize: 24
+                font.weight: Font.Bold
+                color: Globals.style.colorPalette.textColor
+            }
+        }
     }
 
     Item {
@@ -239,7 +294,7 @@ Rectangle {
             id: gameFinishedDialog_body
 
             width: root.width * 0.7
-            height: root.height * 0.3
+            height: root.height * 0.27
 
             Text {
                 id: gameFinishedDialog_text
@@ -258,15 +313,17 @@ Rectangle {
             }
 
             Row {
+                id: finishTimeRow
+
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.08
                 anchors.top: gameFinishedDialog_text.bottom
-                anchors.topMargin: parent.height * 0.08
+                anchors.topMargin: parent.height * 0.15
 
                 spacing: gameFinishedDialog_body.width * 0.05
 
                 Image {
-                    height: gameFinishedDialog_body.height * 0.2
+                    height: gameFinishedDialog_body.height * 0.16
                     width: height
 
                     source: "qrc:/stopwatch.png"
@@ -275,11 +332,40 @@ Rectangle {
                 }
 
                 Text {
-                    height: gameFinishedDialog_body.height * 0.2
+                    height: gameFinishedDialog_body.height * 0.16
 
                     verticalAlignment: Text.AlignVCenter
                     font.pointSize: 22
                     text: root.finishTime
+                    color: Globals.style.colorPalette.textColor
+                }
+            }
+
+            Row {
+                anchors.left: parent.left
+                anchors.leftMargin: parent.width * 0.08
+                anchors.top: finishTimeRow.bottom
+                anchors.topMargin: parent.height * 0.08
+
+                spacing: gameFinishedDialog_body.width * 0.05
+
+                Image {
+                    height: gameFinishedDialog_body.height * 0.16
+                    width: height
+
+                    source: "qrc:/star.png"
+
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                }
+
+                Text {
+                    height: gameFinishedDialog_body.height * 0.16
+
+                    anchors.verticalCenterOffset: height * 0.1
+                    verticalAlignment: Text.AlignVCenter
+                    font.pointSize: 22
+                    text: "#" + GameControl.rank
                     color: Globals.style.colorPalette.textColor
                 }
             }
@@ -336,5 +422,16 @@ Rectangle {
 
         visible: false
         text: GameControl.initialTableCreationProgressText + "..."
+
+        Component.onCompleted: {
+            GameControl.creatingInitialTableFinished.connect(function() {
+                waitDialog.hide();
+            });
+        }
+    }
+
+    BoardSlotsDialog {
+        id: boardSlotsDialog
+        visible: false
     }
 }
