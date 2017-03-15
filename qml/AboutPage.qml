@@ -122,6 +122,13 @@ Rectangle {
             text: qsTr("See:") + " <a href='https://design.google.com/'>https://design.google.com/</a>"
             font.pointSize: 14
             linkColor: Globals.style.colorPalette.linkColor
+            wrapMode: Text.WrapAnywhere
+        }
+
+        Text {
+            text: qsTr("See:") + " <a href='http://www.wpzoom.com/'>http://www.wpzoom.com/</a>"
+            font.pointSize: 14
+            linkColor: Globals.style.colorPalette.linkColor
         }
     }
 
@@ -130,7 +137,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: root.width * 0.05
 
-        width: root.width * 0.2
+        width: root.width * 0.18
         height: width
 
         imageUrl: "qrc:/back.png"
