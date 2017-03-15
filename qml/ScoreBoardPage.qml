@@ -11,6 +11,16 @@ Rectangle {
 
     color: "#81d2c9"
 
+    Image {
+        id: backgroundImage
+
+        anchors.fill: parent
+
+        fillMode: Image.PreserveAspectFit
+        source: "qrc:/game_background.png"
+        opacity: 0.06
+    }
+
     Keys.onBackPressed: {
         if (clearDataConfirmationDialog.visible) {
             clearDataConfirmationDialog.hide();
@@ -54,7 +64,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: anchors.leftMargin
 
-        width: root.width * 0.2
+        width: root.width * 0.18
         height: width
 
         imageUrl: "qrc:/back.png"
@@ -72,7 +82,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: anchors.rightMargin
 
-        width: root.width * 0.2
+        width: root.width * 0.18
         height: width
 
         imageUrl: "qrc:/reset.png"
@@ -91,8 +101,6 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.bottomMargin: parent.width * 0.1
-        anchors.leftMargin: (parent.width / 40)
-        anchors.rightMargin: (parent.width / 40)
 
         Rectangle {
             id: bodyItemBackground
@@ -138,7 +146,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
 
-                        font.pointSize: 24
+                        font.pointSize: 22
                         font.weight: GameControl.scoreBoardModel.difficulty === index + 1 ? Font.Bold
                                                                                           : Font.Normal
                         text: getDifficultyText(index + 1)
