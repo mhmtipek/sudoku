@@ -4,14 +4,34 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 
 QtObject {
+    readonly property ListModel difficultyModel: ListModel {
+        ListElement {
+            name: qsTr("Hardest*")
+            difficulty: 4
+        }
+        ListElement {
+            name: qsTr("Hard")
+            difficulty: 3
+        }
+        ListElement {
+            name: qsTr("Normal")
+            difficulty: 2
+        }
+        ListElement {
+            name: qsTr("Easy")
+            difficulty: 1
+        }
+    }
+
     property QtObject style: QtObject {
         property QtObject colorPalette: QtObject {
             property color textColor: "#0d3832"
+            property color alternateTextColor: "#60837e"
             property color linkColor: "#bd3f1d"
             property color titleColor: "#0d3832"
             property color lightTextColor: "#dedede"
             property color backgroundColor: "#f3e1c9"
-            property color backgroundTextColor: "#90a9a5"
+            property color backgroundTextColor: "#93b3ae"
             property color borderColor: "#00796B"
             property color lineColor: "#176258"
             property color shadowColor: "#353535"
@@ -33,6 +53,8 @@ QtObject {
             property color editableCellTextColor: "#125147"
             property color uneditableCellTextColor: "#0d3832"
             property color sudokuGamePageBackground: "#E5A166"
+            property color boardSlotColor: "#ebd3b6"
+            property color boardSlotAlternateColor: "#e6d4bc"
         }
 
         property real shadowWidth: Screen.width * 0.015
