@@ -24,7 +24,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: anchors.leftMargin
 
-        width: root.width * 0.2
+        width: root.width * 0.18
         height: width
 
         imageUrl: "qrc:/back.png"
@@ -40,24 +40,7 @@ Rectangle {
         anchors.centerIn: parent
 
         Repeater {
-            model: ListModel {
-                ListElement {
-                    name: qsTr("Hardest*")
-                    difficulty: 4
-                }
-                ListElement {
-                    name: qsTr("Hard")
-                    difficulty: 3
-                }
-                ListElement {
-                    name: qsTr("Normal")
-                    difficulty: 2
-                }
-                ListElement {
-                    name: qsTr("Easy")
-                    difficulty: 1
-                }
-            }
+            model: Globals.difficultyModel
 
             delegate: RectangularButton {
                 width: root.width * 0.7
@@ -81,7 +64,7 @@ Rectangle {
         font.pointSize: 16
         font.weight: Font.DemiBold
         color: Globals.style.colorPalette.textColor
-        text: qsTr("* May take long time (~20 seconds)")
+        text: qsTr("* May take a long time (~20 seconds)")
     }
 
     Keys.onBackPressed: {
