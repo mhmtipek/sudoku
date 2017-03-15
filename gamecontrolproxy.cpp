@@ -16,7 +16,8 @@ GameControlProxy::GameControlProxy(QObject *parent) :
     AbstractGameControl(parent),
     m_sourceGameControl(nullptr),
     m_database(QSqlDatabase::addDatabase("QSQLITE")),
-    m_isGamePaused(false)
+    m_isGamePaused(false),
+    m_rank(-1)
 {
     // Initialize model
     m_listModel.setSourceModel(&m_sourceModel);
@@ -116,8 +117,6 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
     // This control is for first initialization of GameControlProxy
     if (!m_sourceGameControl.isNull()) {
         disconnect(m_sourceGameControl.data(), SIGNAL(gameFinished()),
-                   this, SIGNAL(gameFinished()));
-        disconnect(m_sourceGameControl.data(), SIGNAL(gameFinished()),
                    this, SLOT(handleGameFinished()));
         disconnect(m_sourceGameControl.data(), SIGNAL(initialTableCreationProgressChanged()),
                    this, SIGNAL(initialTableCreationProgressChanged()));
@@ -130,12 +129,11 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
     m_sourceGameControl.reset(sourceGameControl);
     m_sourceModel.clear();
     m_listModel.clear();
+    m_rank = -1;
 
     if (!m_sourceGameControl.isNull()) {
         m_sourceGameControl->setModel(&m_sourceModel);
 
-        connect(m_sourceGameControl.data(), SIGNAL(gameFinished()),
-                this, SIGNAL(gameFinished()));
         connect(m_sourceGameControl.data(), SIGNAL(gameFinished()),
                 this, SLOT(handleGameFinished()));
         connect(m_sourceGameControl.data(), SIGNAL(initialTableCreationProgressChanged()),
@@ -225,6 +223,11 @@ void GameControlProxy::pauseGameTime()
         m_sourceGameControl->pauseGameTime();
 }
 
+int GameControlProxy::rank() const
+{
+    return m_rank;
+}
+
 void GameControlProxy::handleGameFinished()
 {
     QSqlQuery insertScoreQuery("INSERT INTO scoreboard "
@@ -241,8 +244,27 @@ void GameControlProxy::handleGameFinished()
         qDebug() << "Inserted score to db";
     }
 
+    QSqlQuery rankQuery("SELECT * FROM scoreboard WHERE difficulty=? ORDER BY score");
+    rankQuery.addBindValue(m_sourceGameControl->difficulty());
+    if (!rankQuery.exec()) {
+        qDebug() << "Failed to query scores:"
+                 << rankQuery.lastError().text();
+    } else {
+        int rank = 1;
+        while (rankQuery.next()) {
+            if (rankQuery.value("score").toInt() == finishTime())
+                break;
+            ++rank;
+        }
+
+        m_rank = rank;
+        emit rankChanged();
+    }
+
     m_sourceModel.makeAllCellsUneditable();
     m_listModel.clear();
+
+    emit gameFinished();
 }
 
 void GameControlProxy::handleApplicationStateChange()

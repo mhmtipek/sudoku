@@ -40,6 +40,9 @@ class GameControlProxy : public AbstractGameControl
     //! Scoreboard model that used in ScoreBoardPage.qml
     Q_PROPERTY(QAbstractTableModel* scoreBoardModel READ scoreBoardModel CONSTANT)
 
+    //! Rank of finish time
+    Q_PROPERTY(int rank READ rank NOTIFY rankChanged)
+
 public:
     //! returns singleton instance of GameControlProxy
     static GameControlProxy& instance();
@@ -101,6 +104,8 @@ public:
     //! \see AbstractGameControl::pauseGameTime
     Q_INVOKABLE void pauseGameTime();
 
+    int rank() const;
+
 signals:
     //! Emitted when source game control is changed
     void sourceControlChanged();
@@ -111,6 +116,7 @@ signals:
      *        error on compile time if it is not defined in
      * \see AbstractGameControl::initialTableCreationProgressTextChanged
      */
+
     void initialTableCreationProgressTextChanged();
     /*!
      * \brief This signal is already defined in AbstractGameControl
@@ -119,6 +125,12 @@ signals:
      * \see AbstractGameControl::initialTableCreationProgressChanged
      */
     void initialTableCreationProgressChanged();
+
+    /*!
+     * \brief Is called when user finishes game.
+     *
+     */
+    void rankChanged();
 
 private slots:
     /*!
@@ -129,6 +141,7 @@ private slots:
      *  - Clears undo stack
      */
     void handleGameFinished();
+
     /*!
      * \brief Is called when application goes to background or foreground.
      *        When app is in background, game time should be paused.
@@ -158,6 +171,8 @@ private:
     QScopedPointer<ScoreBoardModel> m_scoreBoardModel;
 
     bool m_isGamePaused;
+
+    int m_rank;
 };
 
 #endif // GAMECONTROLPROXY_H
