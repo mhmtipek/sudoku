@@ -56,7 +56,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: anchors.leftMargin
 
-        width: root.width * 0.2
+        width: root.width * 0.18
         height: width
 
         imageUrl: "qrc:/info.png"
