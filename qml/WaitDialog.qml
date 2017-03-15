@@ -50,12 +50,6 @@ Item {
         onStopped: root.visible = false
     }
 
-    Component.onCompleted: {
-        GameControl.creatingInitialTableFinished.connect(function() {
-            root.hide();
-        });
-    }
-
     FastBlur {
         width: root.width
         height: root.height
