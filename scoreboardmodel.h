@@ -41,7 +41,7 @@ public:
     //! Returns difficulty
     int difficulty() const;
     /*!
-     * \brief Sets difficulty. Provided value must be in [1,3]
+     * \brief Sets difficulty. Provided value must be in [1,4]
      * \param value Value to
      */
     void setDifficulty(int value);
