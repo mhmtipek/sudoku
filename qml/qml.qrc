@@ -16,5 +16,6 @@
         <file>SliderView.qml</file>
         <file>AboutPage.qml</file>
         <file>RectangularButton.qml</file>
+        <file>BoardSlotsDialog.qml</file>
     </qresource>
 </RCC>
