@@ -13,5 +13,7 @@
         <file>stopwatch.png</file>
         <file>info.png</file>
         <file>reset.png</file>
+        <file>save.png</file>
+        <file>star.png</file>
     </qresource>
 </RCC>
