@@ -20,7 +20,7 @@ Item {
         id: background
 
         anchors.fill: parent
-        anchors.margins: Globals.style.shadowWidth * 2
+        anchors.margins: Globals.style.shadowWidth
 
         color: mouseArea.pressed ? root.colorWhenPressed : root.color
         radius: width / 2
