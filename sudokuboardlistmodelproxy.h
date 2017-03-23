@@ -18,6 +18,8 @@ class SudokuBoardListModelProxy : public QAbstractProxyModel
 
     Q_PROPERTY(bool canUndo READ canUndo NOTIFY canUndoChanged)
 
+    friend class GameControlProxy;
+
 public:
     SudokuBoardListModelProxy(QObject *parent = 0);
 
