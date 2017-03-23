@@ -35,10 +35,13 @@ public:
     void start();
 
     int elapsedTime() const;
+    void setElapsedTime(int duration);
     int finishTime() const;
 
     void resumeGameTime();
     void pauseGameTime();
+
+    bool isStarted() const;
 
 private slots:
     void handleDataChanged(const QModelIndex &topLeft,

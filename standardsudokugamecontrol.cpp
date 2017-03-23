@@ -80,7 +80,12 @@ void StandardSudokuGameControl::start()
 
 int StandardSudokuGameControl::elapsedTime() const
 {
-    return m_elapsedTime.elapsed();
+    return m_elapsedTime.elapsed() + m_previousElapsedTimes;
+}
+
+void StandardSudokuGameControl::setElapsedTime(int duration)
+{
+    m_previousElapsedTimes = duration;
 }
 
 int StandardSudokuGameControl::finishTime() const
@@ -98,6 +103,11 @@ void StandardSudokuGameControl::pauseGameTime()
 {
     m_previousElapsedTimes += m_elapsedTime.elapsed();
     qDebug() << "Paused game time";
+}
+
+bool StandardSudokuGameControl::isStarted() const
+{
+    return m_elapsedTime.elapsed() > 0;
 }
 
 void StandardSudokuGameControl::handleDataChanged(const QModelIndex &topLeft,
@@ -139,6 +149,11 @@ void StandardSudokuGameControl::handleBoardCreatorFinished()
 
 void StandardSudokuGameControl::createInitialTable()
 {
+    if (isStarted()) {
+        qDebug() << "Game is already started. Will not create initial table";
+        return;
+    }
+
     qDebug() << "Creating initial table with difficulty" << m_difficulty;
     m_boardCreator.setDifficulty(m_difficulty);
     m_boardCreator.start();
