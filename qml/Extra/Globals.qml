@@ -6,7 +6,7 @@ import QtQuick.Window 2.0
 QtObject {
     readonly property ListModel difficultyModel: ListModel {
         ListElement {
-            name: qsTr("Hardest*")
+            name: qsTr("Hardest")
             difficulty: 4
         }
         ListElement {
@@ -21,6 +21,17 @@ QtObject {
             name: qsTr("Easy")
             difficulty: 1
         }
+    }
+
+    function getDifficultyText(difficulty) {
+        if (difficulty === 1)
+            return qsTr("Easy");
+        if (difficulty === 2)
+            return qsTr("Normal");
+        if (difficulty === 3)
+            return qsTr("Hard");
+        if (difficulty === 4)
+            return qsTr("Hardest");
     }
 
     property QtObject style: QtObject {
