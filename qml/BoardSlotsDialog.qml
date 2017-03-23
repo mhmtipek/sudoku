@@ -9,6 +9,8 @@ Dialog {
 
     titleVisible: false
 
+    signal selected(int id, bool isEmpty)
+
     function getDifficultyName(value) {
         for (var i = 0; i < Globals.difficultyModel.count; ++i) {
             if (Globals.difficultyModel.get(i).difficulty === value)
@@ -22,38 +24,7 @@ Dialog {
         spacing: root.height * 0.03
 
         Repeater {
-            model: ListModel {
-                ListElement {
-                    isEmpty: false
-                    occupancyPercentage: 79
-                    difficulty: 3
-                    dateTime: "11.03.2017"
-                }
-                ListElement {
-                    isEmpty: true
-                    occupancyPercentage: 0
-                    difficulty: 0
-                    dateTime: ""
-                }
-                ListElement {
-                    isEmpty: false
-                    occupancyPercentage: 52
-                    difficulty: 2
-                    dateTime: "06.02.2017"
-                }
-                ListElement {
-                    isEmpty: true
-                    occupancyPercentage: 0
-                    difficulty: 0
-                    dateTime: ""
-                }
-                ListElement {
-                    isEmpty: true
-                    occupancyPercentage: 0
-                    difficulty: 0
-                    dateTime: ""
-                }
-            }
+            model: GameControl.boardSlotsModel
 
             delegate: Item {
                 width: root.width
@@ -118,7 +89,7 @@ Dialog {
                         anchors.fill: parent
 
                         onClicked: {
-                            // TODO
+                            root.selected(index, isEmpty);
                         }
                     }
                 }
