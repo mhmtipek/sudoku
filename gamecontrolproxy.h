@@ -6,6 +6,7 @@
 #include "sudokuboardlistmodelproxy.h"
 #include "sudokuboardmodel.h"
 #include "scoreboardmodel.h"
+#include "boardslotsmodel.h"
 
 #include <QScopedPointer>
 #include <QSqlDatabase>
@@ -40,6 +41,9 @@ class GameControlProxy : public AbstractGameControl
     //! Scoreboard model that used in ScoreBoardPage.qml
     Q_PROPERTY(QAbstractTableModel* scoreBoardModel READ scoreBoardModel CONSTANT)
 
+    //! Board slots model
+    Q_PROPERTY(QAbstractTableModel* boardSlotsModel READ boardSlotsModel CONSTANT)
+
     //! Rank of finish time
     Q_PROPERTY(int rank READ rank NOTIFY rankChanged)
 
@@ -55,6 +59,9 @@ public:
 
     //! returns score board model
     QAbstractTableModel* scoreBoardModel();
+
+    //! returns board slots model
+    QAbstractTableModel* boardSlotsModel();
 
     /*!
      * \brief Sets game type. Parameter should be one of the values returned by gameTypes function
@@ -104,7 +111,17 @@ public:
     //! \see AbstractGameControl::pauseGameTime
     Q_INVOKABLE void pauseGameTime();
 
+    //! Returns rank of finish time with related difficulty when game finishes
     int rank() const;
+
+    //! Saves current board to slot with given ID
+    Q_INVOKABLE void saveBoardToSlot(int id);
+
+    //! Loads saved game with ID
+    Q_INVOKABLE bool loadSavedGame(int id);
+
+    //! \see AbstractGameControl::isStarted
+    Q_INVOKABLE bool isStarted() const;
 
 signals:
     //! Emitted when source game control is changed
@@ -169,6 +186,7 @@ private:
 
     QSqlDatabase m_database;
     QScopedPointer<ScoreBoardModel> m_scoreBoardModel;
+    QScopedPointer<BoardSlotsModel> m_boardSlotsModel;
 
     bool m_isGamePaused;
 
