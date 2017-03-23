@@ -230,7 +230,7 @@ Rectangle {
                 height: root.width * 0.1
                 verticalAlignment: Text.AlignVCenter
 
-                text: "#" + GameControl.rank
+                text: "#" + GameControl.rank + " (" + Globals.getDifficultyText(GameControl.difficulty()) + ")"
                 font.pointSize: 24
                 font.weight: Font.Bold
                 color: Globals.style.colorPalette.textColor
@@ -365,7 +365,7 @@ Rectangle {
                     anchors.verticalCenterOffset: height * 0.1
                     verticalAlignment: Text.AlignVCenter
                     font.pointSize: 22
-                    text: "#" + GameControl.rank
+                    text: "#" + GameControl.rank + " (" + Globals.getDifficultyText(GameControl.difficulty()) + ")"
                     color: Globals.style.colorPalette.textColor
                 }
             }
@@ -388,7 +388,49 @@ Rectangle {
             {
                 imageUrl: "qrc:/check_white.png",
                 onClicked: function() {
+                    confirmExitDialog.hide();
                     root.backRequested();
+                }
+            }
+        ]
+    }
+
+    BoardSlotsDialog {
+        id: boardSlotsDialog
+
+        visible: false
+
+        onSelected: {
+            if (isEmpty) {
+                GameControl.saveBoardToSlot(id);
+                boardSlotsDialog.hide();
+            } else {
+                confirmSaveDialog.slotId = id;
+                confirmSaveDialog.show();
+            }
+        }
+    }
+
+    Dialog {
+        id: confirmSaveDialog
+
+        title: qsTr("Confirm")
+        text: qsTr("This slot is not empty. Are you sure to replace?")
+
+        property int slotId
+
+        buttons: [
+            {
+                imageUrl: "qrc:/cancel_white.png",
+                onClicked: function() {
+                    confirmSaveDialog.hide();
+                }
+            },
+            {
+                imageUrl: "qrc:/check_white.png",
+                onClicked: function() {
+                    GameControl.saveBoardToSlot(confirmSaveDialog.slotId);
+                    confirmSaveDialog.hide();
                 }
             }
         ]
@@ -411,6 +453,16 @@ Rectangle {
             return;
         }
 
+        if (confirmSaveDialog.visible) {
+            confirmSaveDialog.hide();
+            return;
+        }
+
+        if (boardSlotsDialog.visible) {
+            boardSlotsDialog.hide();
+            return;
+        }
+
         if (GameControl.finishTime() > 0)
             backRequested();
         else
@@ -428,10 +480,5 @@ Rectangle {
                 waitDialog.hide();
             });
         }
-    }
-
-    BoardSlotsDialog {
-        id: boardSlotsDialog
-        visible: false
     }
 }
