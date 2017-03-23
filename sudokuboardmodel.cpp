@@ -130,10 +130,18 @@ void SudokuBoardModel::makeEmptyCellsEditable()
         for (auto& cell: row) {
             if (cell.value() == EMPTY_CELL_VALUE)
                 cell.setEditable(true);
+            else
+                cell.setEditable(false);
         }
     }
 
     emit dataChanged(createIndex(0, 0), createIndex(8, 8), QVector<int>() << EditableRole);
+}
+
+void SudokuBoardModel::setCellEditable(int row, int col)
+{
+    m_dataGrid[row][col].setEditable(true);
+    emit dataChanged(createIndex(row, col), createIndex(row, col), QVector<int>() << EditableRole);
 }
 
 void SudokuBoardModel::makeAllCellsUneditable()

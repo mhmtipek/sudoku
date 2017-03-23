@@ -48,6 +48,13 @@ public:
     void makeEmptyCellsEditable();
 
     /*!
+     * \brief Makes cell given by row, coll editable
+     * \param row Row of cell
+     * \param col Column of cell
+     */
+    void setCellEditable(int row, int col);
+
+    /*!
      * \brief Makes all cells uneditable
      *
      * This function is called when game is finished to prevent user editing finished board
