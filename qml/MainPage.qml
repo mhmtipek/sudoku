@@ -11,6 +11,7 @@ Rectangle {
     height: parent.height
 
     signal newGameRequested()
+    signal gameLoaded()
     signal scoreboardPageRequested()
     signal aboutPageRequested()
 
@@ -31,6 +32,7 @@ Rectangle {
         Repeater {
             model: ListModel {
                 ListElement { label: qsTr("New game") }
+                ListElement { label: qsTr("Load game") }
                 ListElement { label: qsTr("Scoreboard") }
             }
 
@@ -41,10 +43,14 @@ Rectangle {
                 text: model.label
 
                 onClicked: {
-                    if (index === 0)
+                    if (index === 0) {
                         root.newGameRequested();
-                    else if (index === 1)
+                    } else if (index === 1) {
+                        GameControl.boardSlotsModel.refresh();
+                        boardSlotsDialog.show();
+                    } else if (index === 2) {
                         root.scoreboardPageRequested();
+                    }
                 }
             }
         }
@@ -64,5 +70,54 @@ Rectangle {
         onClicked: {
             root.aboutPageRequested();
         }
+    }
+
+    BoardSlotsDialog {
+        id: boardSlotsDialog
+
+        visible: false
+
+        onSelected: {
+            if (isEmpty)
+                return;
+
+            if (!GameControl.loadSavedGame(id)) {
+                messageDialog.title = qsTr("Error");
+                messageDialog.text = qsTr("Failed to load game");
+                messageDialog.show();
+                return;
+            }
+
+            boardSlotsDialog.hide();
+
+            gameLoaded();
+        }
+    }
+
+    Dialog {
+        id: messageDialog
+
+        buttons: [
+            {
+                imageUrl: "qrc:/cancel_white.png",
+                onClicked: function() {
+                    messageDialog.hide();
+                }
+            }
+        ]
+    }
+
+    Keys.onBackPressed: {
+        if (messageDialog.visible) {
+            messageDialog.hide();
+            return;
+        }
+
+        if (boardSlotsDialog.visible) {
+            boardSlotsDialog.hide();
+            return;
+        }
+
+        Qt.quit();
     }
 }
