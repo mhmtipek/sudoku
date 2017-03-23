@@ -38,8 +38,13 @@ public:
     //! Should clear internal values and timers
     virtual void start() = 0;
 
+    //! Returns if game started
+    virtual bool isStarted() const = 0;
+
     //! Should return elapsed time since start function is called
     virtual int elapsedTime() const = 0;
+    //! Should set elapsed time since start function is called. Used when loading game
+    virtual void setElapsedTime(int duration);
     //! Should return finish time. If game is not finished 0 must be returned
     virtual int finishTime() const = 0;
 
