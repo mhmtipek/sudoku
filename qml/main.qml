@@ -43,6 +43,11 @@ ApplicationWindow {
                 stackView.push(aboutPage);
                 changeActiveFocusTimer.start();
             }
+
+            onGameLoaded: {
+                stackView.push(sudokuGamePage);
+                changeActiveFocusTimer.start();
+            }
         }
 
         SudokuGamePage {
@@ -112,6 +117,8 @@ ApplicationWindow {
         }
 
         initialItem: mainPage
+
+        Component.onCompleted: changeActiveFocusTimer.start()
     }
 
     Timer {
@@ -154,9 +161,5 @@ ApplicationWindow {
             property color uneditableCellTextColor: "#656565"
             property color sudokuGamePageBackground: "#11384F"
         }
-    }
-
-    Component.onCompleted: {
-//        Globals.style = materialStyle;
     }
 }
