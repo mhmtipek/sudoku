@@ -46,7 +46,7 @@ Rectangle {
                 width: root.width * 0.7
                 height: root.height * 0.1
 
-                text: model.name
+                text: model.name + (index === 0 ? "*" : "")
 
                 onClicked: {
                     GameControl.setDifficulty(model.difficulty);
