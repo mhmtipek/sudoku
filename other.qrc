@@ -15,5 +15,6 @@
         <file>reset.png</file>
         <file>save.png</file>
         <file>star.png</file>
+        <file>sudoku_tr.qm</file>
     </qresource>
 </RCC>
