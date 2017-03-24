@@ -74,7 +74,7 @@ Item {
 
             anchors.centerIn: parent
 
-            font.pointSize: 28
+            font.pointSize: 26
             color: Globals.style.colorPalette.textColor
             wrapMode: Text.WordWrap
         }
