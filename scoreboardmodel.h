@@ -15,6 +15,7 @@ class ScoreBoardModel : public QSqlTableModel
     Q_PROPERTY(QString gameType READ gameType WRITE setGameType NOTIFY gameTypeChanged)
     Q_PROPERTY(int difficulty READ difficulty WRITE setDifficulty NOTIFY difficultyChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(int average READ average NOTIFY averageChanged)
 
 public:
     //! Roles to be used in QML files
@@ -49,6 +50,9 @@ public:
     //! Returns number of scores
     int count() const;
 
+    //! Returns average of selected difficulty in milliseconds
+    int average() const;
+
     //! Fetches records from SQLITE database
     Q_INVOKABLE void refresh();
 
@@ -56,10 +60,12 @@ signals:
     void gameTypeChanged();
     void difficultyChanged();
     void countChanged();
+    void averageChanged();
 
 private:
     QString m_gameType;
     int m_difficulty;
+    int m_average;
 };
 
 #endif // SCOREBOARDMODEL_H

@@ -6,7 +6,8 @@
 ScoreBoardModel::ScoreBoardModel(QObject *parent)
     : QSqlTableModel(parent),
       m_gameType("standard"),
-      m_difficulty(1)
+      m_difficulty(1),
+      m_average(-1)
 {
     setTable("scoreboard");
     refresh();
@@ -69,10 +70,26 @@ int ScoreBoardModel::count() const
     return rowCount();
 }
 
+int ScoreBoardModel::average() const
+{
+    return m_average;
+}
+
 void ScoreBoardModel::refresh()
 {
     setFilter(QString("difficulty=%1 and game_type='%2'").arg(m_difficulty).arg(m_gameType));
     setSort(3, Qt::AscendingOrder);
     QSqlTableModel::select();
+
+    if (rowCount() > 0) {
+        int total = 0;
+        for (int i = 0; i < rowCount(); ++i)
+            total += QSqlTableModel::data(createIndex(i, 3), Qt::DisplayRole).toInt();
+        m_average = total / rowCount();
+    } else {
+        m_average = -1;
+    }
+
+    emit averageChanged();
     emit countChanged();
 }
