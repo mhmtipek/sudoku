@@ -5,7 +5,7 @@
 #include <array>
 
 /*!
- * \brief Provides a unified interface for functions related solving sudoku board or
+ * \brief Provides a unified interface for functions related solving sudoku board
  */
 class StandardSudokuSolver
 {
