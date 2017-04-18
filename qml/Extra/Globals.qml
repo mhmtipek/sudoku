@@ -68,6 +68,7 @@ QtObject {
             property color boardSlotAlternateColor: "#e6d4bc"
         }
 
-        property real shadowWidth: Screen.width * 0.015
+        property real shadowWidth: Qt.platform.os === "android" || Qt.platform.os === "ios" || Qt.platform.os === "winphone" ? Screen.width * 0.015
+                                                                                                                             : 12
     }
 }
