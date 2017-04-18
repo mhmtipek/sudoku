@@ -47,6 +47,9 @@ Rectangle {
     }
 
     function fixTime(milliseconds) {
+        if (milliseconds < 0)
+            return "-";
+
         var minutes = Math.floor(milliseconds / 60000);
         var seconds = Math.floor((milliseconds % 60000) / 1000);
 
@@ -178,7 +181,8 @@ Rectangle {
         ListView {
             anchors.top: difficultyTabsRow.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
+            anchors.bottom: statisticsRow.top
+            anchors.bottomMargin: parent.width * 0.03
             width: root.width * 0.95
 
             visible: GameControl.scoreBoardModel.count > 0
@@ -187,6 +191,55 @@ Rectangle {
             delegate: scoresListDelegateComponent
             spacing: height * 0.01
             clip: true
+        }
+
+        RowLayout {
+            id: statisticsRow
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: parent.width * 0.03
+            anchors.rightMargin: parent.width * 0.03
+
+            spacing: parent.width * 0.01
+
+            Text {
+                text: qsTr("Avg:")
+                font.pointSize: 16
+                color: Globals.style.colorPalette.textColor
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Text {
+                text: fixTime(GameControl.scoreBoardModel.average)
+                font.pointSize: 20
+                font.weight: Font.Bold
+                color: Globals.style.colorPalette.textColor
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.minimumHeight: 2
+                Layout.maximumHeight: 2
+            }
+
+            Text {
+                text: "Cnt:"
+                font.pointSize: 16
+                color: Globals.style.colorPalette.textColor
+                Layout.alignment: Qt.AlignVCenter
+                horizontalAlignment: Text.AlignRight
+            }
+
+            Text {
+                text: GameControl.scoreBoardModel.count
+                font.pointSize: 20
+                font.weight: Font.Bold
+                color: Globals.style.colorPalette.textColor
+                Layout.alignment: Qt.AlignVCenter
+            }
         }
     }
 
