@@ -31,24 +31,42 @@ Rectangle {
 
         Repeater {
             model: ListModel {
-                ListElement { label: qsTr("New game") }
-                ListElement { label: qsTr("Load game") }
-                ListElement { label: qsTr("Scoreboard") }
+                ListElement {
+                    label: qsTr("Continue last game")
+                    actionId: 1
+                }
+                ListElement {
+                    label: qsTr("New game")
+                    actionId: 2
+                }
+                ListElement {
+                    label: qsTr("Load game")
+                    actionId: 3
+                }
+                ListElement {
+                    label: qsTr("Scoreboard")
+                    actionId: 4
+                }
             }
 
             delegate: RectangularButton {
                 width: root.width * 0.7
                 height: root.height * 0.1
 
+                visible: index === 0 ? (GameControl.previousGameUnfinished ? true : false) : true
+
                 text: model.label
 
                 onClicked: {
-                    if (index === 0) {
+                    if (actionId === 1) {
+                        GameControl.continueLastGame();
+                        gameLoaded();
+                    } else if (actionId === 2) {
                         root.newGameRequested();
-                    } else if (index === 1) {
+                    } else if (actionId === 3) {
                         GameControl.boardSlotsModel.refresh();
                         boardSlotsDialog.show();
-                    } else if (index === 2) {
+                    } else if (actionId === 4) {
                         root.scoreboardPageRequested();
                     }
                 }

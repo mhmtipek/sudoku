@@ -10,6 +10,7 @@
 
 #include <QScopedPointer>
 #include <QSqlDatabase>
+#include <QTimer>
 
 /*!
  * \brief Proxy class for game control. This class provides interface for QML
@@ -46,6 +47,9 @@ class GameControlProxy : public AbstractGameControl
 
     //! Rank of finish time
     Q_PROPERTY(int rank READ rank NOTIFY rankChanged)
+
+    //! Previous game is unfinished or not
+    Q_PROPERTY(bool previousGameUnfinished READ isPreviousGameUnfinished NOTIFY previousGameUnfinishedChanged)
 
 public:
     //! returns singleton instance of GameControlProxy
@@ -123,6 +127,14 @@ public:
     //! \see AbstractGameControl::isStarted
     Q_INVOKABLE bool isStarted() const;
 
+    /*!
+     * \return Returns if previous game is unfinished.
+     */
+    Q_INVOKABLE bool isPreviousGameUnfinished() const;
+
+    //! If last fame is unfinished, starts unfinished board.
+    Q_INVOKABLE void continueLastGame();
+
 signals:
     //! Emitted when source game control is changed
     void sourceControlChanged();
@@ -149,6 +161,12 @@ signals:
      */
     void rankChanged();
 
+    /*!
+     * \brief Is called when user 'previousGameUnfinished' property changes
+     *
+     */
+    void previousGameUnfinishedChanged();
+
 private slots:
     /*!
      * \brief Handles gameFinished signal emitted from source game control
@@ -165,6 +183,29 @@ private slots:
      */
     void handleApplicationStateChange();
 
+    /*!
+     * \brief Saves change on board to sqlite db. Current board data is
+     *        saved to database to enable user to continue game in case of
+     *        application quit unexpectedly.
+     *
+     * \param topLeft Top left index of modified area on model
+     * \param bottomRight Bottom right index of modified area on model
+     * \param roles Changed attributes of board cell
+     */
+    void saveBoardChange(QModelIndex topLeft, QModelIndex bottomRight, QVector<int> roles);
+
+    /*!
+     * \brief Updates game time in live_game_data table
+     *
+     */
+    void updateLiveGameTime();
+
+    /*!
+     * \brief Enables saving live game data to database
+     *
+     */
+    void enableLiveGameData();
+
 private:
     /*!
      * \brief Initializes proxy sudoku board model, SQLITE database and scoreboard
@@ -178,6 +219,10 @@ private:
 
     void setSourceGameControl(AbstractGameControl *sourceGameControl);
 
+    void clearLiveGameData();
+    void setLiveGameDataEnabled(bool ok);
+    void updateGameTypeInLiveGameData();
+
     SudokuBoardModel m_sourceModel;
     SudokuBoardListModelProxy m_listModel;
 
@@ -187,6 +232,8 @@ private:
     QSqlDatabase m_database;
     QScopedPointer<ScoreBoardModel> m_scoreBoardModel;
     QScopedPointer<BoardSlotsModel> m_boardSlotsModel;
+
+    QTimer m_updateLiveGameTimeTimer;
 
     bool m_isGamePaused;
 

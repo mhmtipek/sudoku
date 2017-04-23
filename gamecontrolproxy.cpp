@@ -22,6 +22,8 @@ GameControlProxy::GameControlProxy(QObject *parent) :
 {
     // Initialize model
     m_listModel.setSourceModel(&m_sourceModel);
+    connect(&m_listModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+            this, SLOT(saveBoardChange(QModelIndex,QModelIndex,QVector<int>)));
 
     // Initialize sqlite database
     const static QString databaseFilePath = QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).arg("sqlite.db");
@@ -29,6 +31,7 @@ GameControlProxy::GameControlProxy(QObject *parent) :
     if (!databaseFileDir.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)))
         qDebug() << "Failed to mkpath of sqlite db: " << databaseFileDir.absolutePath();
 
+    // Initialize database
     m_database.setDatabaseName(databaseFilePath);
     if (m_database.open()) {
         qDebug() << "Opened db file:" << databaseFilePath;
@@ -79,6 +82,31 @@ GameControlProxy::GameControlProxy(QObject *parent) :
                 }
             }
         }
+
+        // Check live game data table
+        QSqlQuery checkLiveGameDataTableQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='live_game_data'");
+        if (!checkLiveGameDataTableQuery.next()) {
+            // Create live game data table
+            QSqlQuery createLiveGameDataTableQuery("CREATE TABLE live_game_data ("
+                                                   "game_active INTEGER, "
+                                                   "game_type TEXT, "
+                                                   "board_data TEXT, "
+                                                   "elapsed_time INTEGER, "
+                                                   "difficulty INTEGER"
+                                                   ")");
+            if (!createLiveGameDataTableQuery.isActive()) {
+                qDebug() << "Failed to create live_game_data table; Error:"
+                         << createLiveGameDataTableQuery.lastError().text();
+            } else {
+                qDebug() << "Created live_game_data table";
+
+                QSqlQuery insertDataQuery(QString("INSERT INTO live_game_data VALUES (0, '', '', 0, 0)"));
+                if (!insertDataQuery.isActive()) {
+                    qDebug() << "Inserting live game data row into database failed:"
+                             << insertDataQuery.lastError().text();
+                }
+            }
+        }
     } else {
         qDebug() << "Fatal: Unable to open sqlite db file; File:"
                  << databaseFilePath
@@ -91,6 +119,10 @@ GameControlProxy::GameControlProxy(QObject *parent) :
 
     connect(static_cast<QGuiApplication*>(QGuiApplication::instance()), SIGNAL(applicationStateChanged(Qt::ApplicationState)),
             this, SLOT(handleApplicationStateChange()));
+
+    m_updateLiveGameTimeTimer.setInterval(1000);
+    connect(&m_updateLiveGameTimeTimer, SIGNAL(timeout()),
+            this, SLOT(updateLiveGameTime()));
 }
 
 GameControlProxy::~GameControlProxy()
@@ -128,6 +160,7 @@ bool GameControlProxy::setGameType(const QString &type)
     m_gameType = type;
 
     setSourceGameControl(GameControlFactory::instance().create(type));
+    updateGameTypeInLiveGameData();
 
     return !m_sourceGameControl.isNull();
 }
@@ -166,6 +199,7 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
     m_sourceModel.clear();
     m_listModel.clear();
     m_rank = -1;
+    clearLiveGameData();
 
     if (!m_sourceGameControl.isNull()) {
         m_sourceGameControl->setModel(&m_sourceModel);
@@ -178,9 +212,54 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
                 this, SIGNAL(initialTableCreationProgressTextChanged()));
         connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                 this, SIGNAL(creatingInitialTableFinished()));
+        connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
+                &m_updateLiveGameTimeTimer, SLOT(start()));
+        connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
+                this, SLOT(enableLiveGameData()));
     }
 
     emit sourceControlChanged();
+}
+
+void GameControlProxy::clearLiveGameData()
+{
+    QSqlQuery clearQuery("UPDATE live_game_data set game_active=0, game_type='', board_data='', elapsed_time=0, difficulty=0");
+
+    if (!clearQuery.isActive()) {
+        qDebug() << "Failed to clear live game data;"
+                 << clearQuery.lastError().text();
+    }
+
+    emit previousGameUnfinishedChanged();
+}
+
+void GameControlProxy::enableLiveGameData()
+{
+    setLiveGameDataEnabled(true);
+}
+
+void GameControlProxy::setLiveGameDataEnabled(bool ok)
+{
+    QSqlQuery updateQuery("UPDATE live_game_data set game_active=?");
+    updateQuery.bindValue(0, ok ? 1 : 0);
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to set live game data" << (ok ? "enabled;" : "disabled;")
+                 << updateQuery.lastError().text();
+    }
+
+    emit previousGameUnfinishedChanged();
+}
+
+void GameControlProxy::updateGameTypeInLiveGameData()
+{
+    QSqlQuery updateQuery("UPDATE live_game_data set game_type=?");
+    updateQuery.bindValue(0, m_gameType);
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to set game type in live_game_data table;"
+                 << updateQuery.lastError().text();
+    }
 }
 
 void GameControlProxy::createInitialTable()
@@ -341,8 +420,65 @@ bool GameControlProxy::isStarted() const
                                         : m_sourceGameControl->isStarted();
 }
 
+bool GameControlProxy::isPreviousGameUnfinished() const
+{
+    QSqlQuery query("SELECT game_active from live_game_data");
+    if (!query.isActive()) {
+        qDebug() << "Failed to check previous game active:"
+                 << query.lastError().text();
+        return false;
+    }
+
+    query.next();
+
+    return query.value(0).toInt() != 0;
+}
+
+void GameControlProxy::continueLastGame()
+{
+    QSqlQuery selectQuery("SELECT * FROM live_game_data");
+    if (!selectQuery.isActive()) {
+        qDebug() << "Failed to get live game data:" << selectQuery.lastError().text();
+        return;
+    }
+
+    if (!selectQuery.next()) {
+        qDebug() << "Error: live_game_data table is empty";
+        return;
+    }
+
+    const QStringList boardValues = selectQuery.value("board_data").toString().split(",");
+    if (boardValues.size() != m_listModel.rowCount()) {
+        qDebug() << "Error: live_game_data table is empty";
+        return;
+    }
+
+    setSourceGameControl(GameControlFactory::instance().create(selectQuery.value("game_type").toString()));
+    if (m_sourceGameControl.isNull())
+        return;
+
+    m_gameType = selectQuery.value("game_type").toString();
+
+    m_sourceGameControl->setDifficulty(selectQuery.value("difficulty").toInt());
+    for (int x = 0; x < m_listModel.rowCount(); ++x) {
+        const QStringList cellData = boardValues.at(x).split(";");
+        m_listModel.setData(m_listModel.index(x, 0), cellData.at(0).toInt(), Qt::DisplayRole);
+        if (cellData[1].contains('e')) {
+            const QModelIndex index = m_listModel.mapToSource(m_listModel.createIndex(x, 0));
+            qDebug() << "Set cell editable:" << index.row() << index.column();
+            m_sourceModel.setCellEditable(index.row(), index.column());
+        }
+    }
+
+    m_sourceGameControl->start();
+    m_sourceGameControl->setElapsedTime(selectQuery.value("elapsed_time").toInt());
+}
+
 void GameControlProxy::handleGameFinished()
 {
+    m_updateLiveGameTimeTimer.stop();
+    setLiveGameDataEnabled(false);
+
     QSqlQuery insertScoreQuery("INSERT INTO scoreboard "
                                "(game_type, difficulty, player_name, score) "
                                "VALUES (?, ?, ?, ?)");
@@ -386,4 +522,38 @@ void GameControlProxy::handleApplicationStateChange()
         resumeGameTime();
     else if (!m_isGamePaused)
         pauseGameTime();
+}
+
+void GameControlProxy::saveBoardChange(QModelIndex topLeft, QModelIndex bottomRight, QVector<int> roles)
+{
+    Q_UNUSED(topLeft)
+    Q_UNUSED(bottomRight)
+
+    if (!roles.contains(SudokuBoardModel::ValueRole) && !roles.contains(Qt::DisplayRole))
+        return;
+
+    QString boardData;
+    for (int x = 0; x < m_listModel.rowCount(); ++x)
+        boardData += QString("%1;%2,")
+                .arg(m_listModel.data(m_listModel.index(x, 0)).toInt())
+                .arg(m_listModel.data(m_listModel.createIndex(x, 0), SudokuBoardModel::EditableRole).toBool() ? "e" : "");
+    boardData.chop(1);
+
+    QSqlQuery updateQuery("UPDATE live_game_data SET board_data=?");
+    updateQuery.bindValue(0, boardData);
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to save board data to live_game_data table;"
+                 << updateQuery.lastError().text();
+    }
+}
+
+void GameControlProxy::updateLiveGameTime()
+{
+    QSqlQuery updateQuery("UPDATE live_game_data set elapsed_time=?");
+    updateQuery.bindValue(0, m_sourceGameControl->elapsedTime());
+
+    if (!updateQuery.exec()) {
+        qDebug() << "Failed to update game time;"
+                 << updateQuery.lastError().text();
+    }
 }
