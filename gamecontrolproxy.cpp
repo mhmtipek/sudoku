@@ -193,6 +193,10 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
                    this, SIGNAL(initialTableCreationProgressTextChanged()));
         disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                    this, SIGNAL(creatingInitialTableFinished()));
+        disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
+                   &m_updateLiveGameTimeTimer, SLOT(start()));
+        disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
+                   this, SLOT(enableLiveGameData()));
     }
 
     m_sourceGameControl.reset(sourceGameControl);
@@ -529,7 +533,7 @@ void GameControlProxy::saveBoardChange(QModelIndex topLeft, QModelIndex bottomRi
     Q_UNUSED(topLeft)
     Q_UNUSED(bottomRight)
 
-    if (!roles.contains(SudokuBoardModel::ValueRole) && !roles.contains(Qt::DisplayRole))
+    if (!roles.contains(SudokuBoardModel::ValueRole) && !roles.contains(SudokuBoardModel::EditableRole) && !roles.contains(Qt::DisplayRole))
         return;
 
     QString boardData;
