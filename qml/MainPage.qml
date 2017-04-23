@@ -32,7 +32,7 @@ Rectangle {
         Repeater {
             model: ListModel {
                 ListElement {
-                    label: qsTr("Continue last game")
+                    label: qsTr("Continue")
                     actionId: 1
                 }
                 ListElement {
