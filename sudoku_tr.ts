@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="tr_TR">
+<TS version="2.1" language="tr_TR">
 <context>
     <name>AboutPage</name>
     <message>
@@ -91,27 +91,33 @@
 <context>
     <name>MainPage</name>
     <message>
-        <location filename="qml/MainPage.qml" line="34"/>
+        <location filename="qml/MainPage.qml" line="35"/>
+        <source>Continue</source>
+        <oldsource>Continue last game</oldsource>
+        <translation>Devam et</translation>
+    </message>
+    <message>
+        <location filename="qml/MainPage.qml" line="39"/>
         <source>New game</source>
         <translation>Yeni oyun</translation>
     </message>
     <message>
-        <location filename="qml/MainPage.qml" line="35"/>
+        <location filename="qml/MainPage.qml" line="43"/>
         <source>Load game</source>
         <translation>Oyun yükle</translation>
     </message>
     <message>
-        <location filename="qml/MainPage.qml" line="36"/>
+        <location filename="qml/MainPage.qml" line="47"/>
         <source>Scoreboard</source>
         <translation>Skor tabelası</translation>
     </message>
     <message>
-        <location filename="qml/MainPage.qml" line="85"/>
+        <location filename="qml/MainPage.qml" line="103"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
-        <location filename="qml/MainPage.qml" line="86"/>
+        <location filename="qml/MainPage.qml" line="104"/>
         <source>Failed to load game</source>
         <translation>Oyun yüklenemedi</translation>
     </message>
@@ -139,27 +145,32 @@
         <translation>Çok zor</translation>
     </message>
     <message>
-        <location filename="qml/ScoreBoardPage.qml" line="54"/>
+        <location filename="qml/ScoreBoardPage.qml" line="57"/>
         <source>%1m %2s</source>
         <translation>%1d %2s</translation>
     </message>
     <message>
-        <location filename="qml/ScoreBoardPage.qml" line="56"/>
+        <location filename="qml/ScoreBoardPage.qml" line="59"/>
         <source>%1s</source>
         <translation>%1s</translation>
     </message>
     <message>
-        <location filename="qml/ScoreBoardPage.qml" line="170"/>
+        <location filename="qml/ScoreBoardPage.qml" line="173"/>
         <source>No score</source>
         <translation>Skor yok</translation>
     </message>
     <message>
-        <location filename="qml/ScoreBoardPage.qml" line="223"/>
+        <location filename="qml/ScoreBoardPage.qml" line="208"/>
+        <source>Avg:</source>
+        <translation>Ort:</translation>
+    </message>
+    <message>
+        <location filename="qml/ScoreBoardPage.qml" line="276"/>
         <source>Please confirm</source>
         <translation>Lütfen onaylayın</translation>
     </message>
     <message>
-        <location filename="qml/ScoreBoardPage.qml" line="224"/>
+        <location filename="qml/ScoreBoardPage.qml" line="277"/>
         <source>Are you sure to reset all scores?</source>
         <translation>Tüm skorları silmek istediğinize emin misiniz?</translation>
     </message>
