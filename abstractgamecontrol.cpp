@@ -20,3 +20,8 @@ void AbstractGameControl::setElapsedTime(int duration)
 {
     Q_UNUSED(duration)
 }
+
+void AbstractGameControl::close()
+{
+
+}

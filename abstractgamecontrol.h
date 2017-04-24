@@ -58,6 +58,9 @@ public:
     //! Should set difficulty. Value must be in range [1,3]
     virtual void setDifficulty(int difficulty) = 0;
 
+    //! When user quits game, this function must be called
+    virtual void close();
+
 signals:
     //! Should be emitted when game finishes
     void gameFinished();
