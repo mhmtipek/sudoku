@@ -135,6 +135,9 @@ public:
     //! If last fame is unfinished, starts unfinished board.
     Q_INVOKABLE void continueLastGame();
 
+    //! \see AbstractGameControl::close
+    Q_INVOKABLE void close();
+
 signals:
     //! Emitted when source game control is changed
     void sourceControlChanged();
@@ -222,6 +225,7 @@ private:
     void clearLiveGameData();
     void setLiveGameDataEnabled(bool ok);
     void updateGameTypeInLiveGameData();
+    void updateLiveGameData();
 
     SudokuBoardModel m_sourceModel;
     SudokuBoardListModelProxy m_listModel;

@@ -194,8 +194,6 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
         disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                    this, SIGNAL(creatingInitialTableFinished()));
         disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
-                   &m_updateLiveGameTimeTimer, SLOT(start()));
-        disconnect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                    this, SLOT(enableLiveGameData()));
     }
 
@@ -217,8 +215,6 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
         connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                 this, SIGNAL(creatingInitialTableFinished()));
         connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
-                &m_updateLiveGameTimeTimer, SLOT(start()));
-        connect(m_sourceGameControl.data(), SIGNAL(creatingInitialTableFinished()),
                 this, SLOT(enableLiveGameData()));
     }
 
@@ -227,6 +223,8 @@ void GameControlProxy::setSourceGameControl(AbstractGameControl *sourceGameContr
 
 void GameControlProxy::clearLiveGameData()
 {
+    qDebug() << "clearLiveGameData";
+
     QSqlQuery clearQuery("UPDATE live_game_data set game_active=0, game_type='', board_data='', elapsed_time=0, difficulty=0");
 
     if (!clearQuery.isActive()) {
@@ -255,6 +253,13 @@ void GameControlProxy::setLiveGameDataEnabled(bool ok)
     emit previousGameUnfinishedChanged();
 }
 
+void GameControlProxy::updateLiveGameData()
+{
+    saveBoardChange(QModelIndex(), QModelIndex(), QVector<int>() << SudokuBoardModel::ValueRole);
+    updateLiveGameTime();
+    updateGameTypeInLiveGameData();
+}
+
 void GameControlProxy::updateGameTypeInLiveGameData()
 {
     QSqlQuery updateQuery("UPDATE live_game_data set game_type=?");
@@ -279,8 +284,10 @@ QObject *GameControlProxy::sourceControl() const
 
 void GameControlProxy::start()
 {
-    if (!m_sourceGameControl.isNull())
+    if (!m_sourceGameControl.isNull()) {
         m_sourceGameControl->start();
+        m_updateLiveGameTimeTimer.start();
+    }
 }
 
 int GameControlProxy::elapsedTime() const
@@ -407,7 +414,6 @@ bool GameControlProxy::loadSavedGame(int id)
         m_listModel.setData(m_listModel.index(x, 0), cellData.at(0).toInt(), Qt::DisplayRole);
         if (cellData[1].contains('e')) {
             const QModelIndex index = m_listModel.mapToSource(m_listModel.createIndex(x, 0));
-            qDebug() << "Set cell editable:" << index.row() << index.column();
             m_sourceModel.setCellEditable(index.row(), index.column());
         }
     }
@@ -440,6 +446,8 @@ bool GameControlProxy::isPreviousGameUnfinished() const
 
 void GameControlProxy::continueLastGame()
 {
+    qDebug() << "Continue last game";
+
     QSqlQuery selectQuery("SELECT * FROM live_game_data");
     if (!selectQuery.isActive()) {
         qDebug() << "Failed to get live game data:" << selectQuery.lastError().text();
@@ -457,25 +465,38 @@ void GameControlProxy::continueLastGame()
         return;
     }
 
-    setSourceGameControl(GameControlFactory::instance().create(selectQuery.value("game_type").toString()));
+    m_gameType = selectQuery.value("game_type").toString();
+
+    updateGameTypeInLiveGameData();
+    const int difficulty = selectQuery.value("difficulty").toInt();
+
+    setSourceGameControl(GameControlFactory::instance().create(m_gameType));
     if (m_sourceGameControl.isNull())
         return;
 
-    m_gameType = selectQuery.value("game_type").toString();
-
-    m_sourceGameControl->setDifficulty(selectQuery.value("difficulty").toInt());
+    m_sourceGameControl->setDifficulty(difficulty);
     for (int x = 0; x < m_listModel.rowCount(); ++x) {
         const QStringList cellData = boardValues.at(x).split(";");
         m_listModel.setData(m_listModel.index(x, 0), cellData.at(0).toInt(), Qt::DisplayRole);
         if (cellData[1].contains('e')) {
             const QModelIndex index = m_listModel.mapToSource(m_listModel.createIndex(x, 0));
-            qDebug() << "Set cell editable:" << index.row() << index.column();
             m_sourceModel.setCellEditable(index.row(), index.column());
         }
     }
 
-    m_sourceGameControl->start();
+    saveBoardChange(QModelIndex(), QModelIndex(), QVector<int>() << SudokuBoardModel::ValueRole);
+
+    start();
     m_sourceGameControl->setElapsedTime(selectQuery.value("elapsed_time").toInt());
+
+    updateLiveGameData();
+
+    setLiveGameDataEnabled(true);
+}
+
+void GameControlProxy::close()
+{
+    clearLiveGameData();
 }
 
 void GameControlProxy::handleGameFinished()
