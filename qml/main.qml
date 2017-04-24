@@ -55,6 +55,7 @@ ApplicationWindow {
             visible: false
 
             onBackRequested: {
+                GameControl.close();
                 stackView.pop();
                 changeActiveFocusTimer.start();
             }
