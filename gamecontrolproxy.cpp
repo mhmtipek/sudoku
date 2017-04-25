@@ -418,8 +418,13 @@ bool GameControlProxy::loadSavedGame(int id)
         }
     }
 
-    m_sourceGameControl->start();
+    saveBoardChange(QModelIndex(), QModelIndex(), QVector<int>() << SudokuBoardModel::ValueRole);
+
+    start();
     m_sourceGameControl->setElapsedTime(selectQuery.value("elapsed_time").toInt());
+
+    updateLiveGameData();
+    setLiveGameDataEnabled(true);
 
     return true;
 }
