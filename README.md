@@ -11,7 +11,7 @@ Features
 
 Tested on platforms
 -------------------
-- Android
+- Android (<a href="https://play.google.com/store/apps/details?id=com.mehmetipek.sudoku" target="_blank">Play Store</a>) 
 - iOS Simulator
 - macOS
 - Ubuntu
