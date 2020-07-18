@@ -9,6 +9,8 @@ Rectangle {
     width: parent.width
     height: parent.height
 
+    readonly property bool wideScreen: 2 * width > height
+
     signal backRequested
 
     property string finishTime: "-"
@@ -137,15 +139,16 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        height: width + 2 * Globals.style.shadowWidth
+        height: wideScreen ? parent.height / 2 + 2 * Globals.style.shadowWidth
+                           : width + 2 * Globals.style.shadowWidth
 
         SudokuBoard {
             id: board
 
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.centerIn: parent
 
+            width: parent.width > parent.height ? parent.height
+                                                : parent.width
             height: width
 
             onCellClicked: {
@@ -255,7 +258,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
 
             height: root.height * 0.09
-            width: root.width * 0.9
+            width: height * 6
 
             visible: false
 
