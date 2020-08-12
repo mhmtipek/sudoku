@@ -258,7 +258,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
 
             height: root.height * 0.09
-            width: height * 6
+            width: board.width
 
             visible: false
 
